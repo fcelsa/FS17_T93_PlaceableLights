@@ -4,6 +4,11 @@
 
 
 
+## Place Anywhere branch
+This branch is created for the development of code that allows these lights to be placed anywhere, even inside other objects. This is working for singleplayer games, but not for multiplayer games. If you know why, and can fix it, please do!
+
+
+
 
 
 ## Publishing / Media
