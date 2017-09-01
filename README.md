@@ -5,6 +5,11 @@
 
 
 
+## Placement Height Adjust branch
+This branch is created for the development of code that allows the lights that can be adjusted in height, to be adjusted while you're placing them. This is working for singleplayer games, but not for multiplayer games. If you know why, and can fix it, please do!
+
+
+
 
 ## Publishing / Media
 Only I (Timmiej93) am allowed to publish this code as a mod to any website designed to share mods or files. You are **not** allowed to **copy** or **duplicate** entire scripts from this mod and use them for other mods.
