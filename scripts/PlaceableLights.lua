@@ -407,6 +407,52 @@ function PlaceableLights:writeStream(streamId, connection)
 	end
 end
 
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+--                                                                                                --
+-- Start of place anywhere section                                                                --
+--                                                                                                --
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+
+function PlaceableLights:PS_isInsideRestrictedZone(superFunc, something, x,y,z)
+    -- if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName and t93Settings.freePlacement then
+    if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName then
+        return false;
+    else
+        return superFunc(self, something, x,y,z);
+    end
+end
+PlacementScreen.isInsideRestrictedZone = Utils.overwrittenFunction(PlacementScreen.isInsideRestrictedZone, PlaceableLights.PS_isInsideRestrictedZone)
+
+function PlaceableLights:PS_hasObjectOverlap(superFunc, x,y,z, something)
+    -- if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName and t93Settings.freePlacement then
+    if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName then
+        return false;
+    else
+        return superFunc(self, x,y,z, something);
+    end
+end
+PlacementScreen.hasObjectOverlap = Utils.overwrittenFunction(PlacementScreen.hasObjectOverlap, PlaceableLights.PS_hasObjectOverlap)
+
+function PlaceableLights:PS_placementRaycastCallback(superFunc, terrainId1, x,y,z, a,b,c,d,e, terrainId2)
+    -- if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName and t93Settings.freePlacement then 
+    if g_gui.currentGui.target.placementItem.customEnvironment == PlaceableLightsManager.modName then 
+        if not t93Settings.alignToGround then
+            return superFunc(self, g_currentMission.terrainRootNode, x,y,z, a,b,c,d,e, g_currentMission.terrainRootNode)
+        else
+            local terrainHeight = getTerrainHeightAtWorldPos(g_currentMission.terrainRootNode, x,y,z)
+            return superFunc(self, g_currentMission.terrainRootNode, x,terrainHeight,z, a,b,c,d,e, g_currentMission.terrainRootNode)
+        end
+    end
+    return superFunc(self, terrainId1, x,y,z, a,b,c,d,e, terrainId2);
+end
+PlacementScreen.placementRaycastCallback = Utils.overwrittenFunction(PlacementScreen.placementRaycastCallback, PlaceableLights.PS_placementRaycastCallback)
+
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+--                                                                                                --
+-- End of place anywhere section                                                                --
+--                                                                                                --
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+
 function PlaceableLightsManager:deleteMap()end;
 function PlaceableLightsManager:mouseEvent(posX, posY, isDown, isUp, button)end;
 function PlaceableLightsManager:keyEvent(unicode, sym, modifier, isDown)end;
