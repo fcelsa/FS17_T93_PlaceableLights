@@ -407,6 +407,64 @@ function PlaceableLights:writeStream(streamId, connection)
 	end
 end
 
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+--                                                                                                --
+-- Start of placement height adjust section                                                       --
+--                                                                                                --
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+
+function PlaceableLights:PSUpdate(dt)
+    local lamp = PlaceableLightsManager.ghost;
+
+    if lamp ~= nil then
+        if lamp.alignmentGuide ~= nil and lamp.raisableElement ~= nil and lamp.adjustHeights ~= nil then
+            g_currentMission:addExtraPrintText("TEMP Lamp height can also be changed after placement.")
+
+            -- Change lamp height increment
+            local parenthesisText = lamp.adjustHeights[lamp.activeHeight].text;
+            local height = string.format("%.2f", lamp.adjustHeights[lamp.activeHeight].height);
+            g_currentMission:addHelpButtonText(string.format(g_i18n:getText("button_height_changeStepSize"), parenthesisText, height), InputBinding.changeStepSize);
+            
+            if InputBinding.hasEvent(InputBinding.changeStepSize) then
+                lamp.activeHeight = lamp.activeHeight + 1;
+                if lamp.activeHeight > table.getn(lamp.adjustHeights) then
+                    lamp.activeHeight = 1;
+                end
+            end
+
+            -- Change lamp height
+            g_currentMission:addHelpButtonText(g_i18n:getText("button_changeHeight"), InputBinding.changeHeightF1);
+
+            -- Change lamp height up/down
+            if InputBinding.hasEvent(InputBinding.changeHeightDown) then
+                local x,y,z = getTranslation(lamp.raisableElement);
+                local dy = lamp.adjustHeights[lamp.activeHeight].height;
+                y = Utils.clamp(y-dy, -10, 50);
+                PlaceableLightsManager.currentGhostHeight = y;
+                setTranslation(lamp.raisableElement, x,y,z);
+            elseif InputBinding.hasEvent(InputBinding.changeHeightUp) then
+                local x,y,z = getTranslation(lamp.raisableElement);
+                local dy = lamp.adjustHeights[lamp.activeHeight].height;
+                y = Utils.clamp(y+dy, -10, 50)
+                PlaceableLightsManager.currentGhostHeight = y;
+                setTranslation(lamp.raisableElement, x,y,z);
+            end
+        end
+
+        if InputBinding.hasEvent(InputBinding.TOGGLE_HELP_TEXT) then
+            g_gameSettings.showHelpMenu = (not g_gameSettings.showHelpMenu)
+        end
+    end
+end
+PlacementScreen.update = Utils.prependedFunction(PlacementScreen.update, PlaceableLights.PSUpdate)
+
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+--                                                                                                --
+-- End of placement height adjust section                                                         --
+--                                                                                                --
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --
+
+
 function PlaceableLightsManager:deleteMap()end;
 function PlaceableLightsManager:mouseEvent(posX, posY, isDown, isUp, button)end;
 function PlaceableLightsManager:keyEvent(unicode, sym, modifier, isDown)end;
