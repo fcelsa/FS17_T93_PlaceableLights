@@ -6,10 +6,8 @@ This mod has a [WIP topic on FS-UK](https://www.fs-uk.com/forum/index.php?topic=
 
 
 
-
 ## Placement Height Adjust branch
 This branch is created for the development of code that allows the lights that can be adjusted in height, to be adjusted while you're placing them. This is working for singleplayer games, but not for multiplayer games. If you know why, and can fix it, please do!
-
 
 
 
